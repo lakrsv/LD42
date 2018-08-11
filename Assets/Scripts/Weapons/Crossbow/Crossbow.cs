@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="PlayerInput.cs" author="Lars" company="None">
+// <copyright file="Crossbow.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -15,54 +15,59 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using JetBrains.Annotations;
+
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
-public class PlayerInput : MonoBehaviour
+using Utilities.ObjectPool;
+
+[RequireComponent(typeof(Animator))]
+public class Crossbow : Weapon
 {
-    private const float MaxVelocity = 3f;
+    private const float FireCooldown = 1.0f;
 
-    private readonly float _acceleration = 50f;
+    private const string FireTrigger = "Fire";
 
-    private Vector2 _movement = new Vector2();
+    private const string ReloadTrigger = "Reload";
 
-    private Rigidbody2D _rigidBody;
+    private Animator _crossbowAnimator;
+
+    private float _lastFireTime;
+
+    private Animator _stringAnimator;
 
     [SerializeField]
-    private Weapon[] _equippedWeapons;
+    private Transform _arrow;
 
-    // Update is called once per frame
-    private void FixedUpdate()
+    public override bool Fire()
     {
-        Move();
+        var timePassed = Time.time - _lastFireTime;
+        if (FireCooldown > timePassed) return false;
+
+        var trail = ObjectPools.Instance.GetPooledObject<ArrowTrail>();
+
+        var startPos = new Vector2(_arrow.position.x - (_arrow.up.x * 0.16f), _arrow.position.y - (_arrow.up.y * 0.16f));
+        trail.Move(startPos, 15 * _arrow.transform.up, 0.10f);
+
+        _stringAnimator.SetTrigger(FireTrigger);
+        _crossbowAnimator.SetTrigger(FireTrigger);
+        _lastFireTime = Time.time;
+
+        Invoke(nameof(Reload), 0.2f);
+
+        return true;
     }
 
-    private void Update()
+    private void Reload()
     {
-        FireWeapon();
-    }
-
-    private void Move()
-    {
-        var inputH = Input.GetAxisRaw("Horizontal");
-        var inputV = Input.GetAxisRaw("Vertical");
-
-        _movement.Set(inputH, inputV);
-        _movement.Normalize();
-
-        _rigidBody.AddForce(_movement * _acceleration);
-        _rigidBody.velocity = Vector2.ClampMagnitude(_rigidBody.velocity, MaxVelocity);
-    }
-
-    private void FireWeapon()
-    {
-        // TODO - Make accessible for controller
-        if (Input.GetMouseButton(0)) _equippedWeapons.ForEach(x => x.Fire());
+        _crossbowAnimator.SetTrigger(ReloadTrigger);
+        _stringAnimator.SetTrigger(ReloadTrigger);
     }
 
     // Use this for initialization
     private void Start()
     {
-        _rigidBody = GetComponent<Rigidbody2D>();
+        _crossbowAnimator = GetComponent<Animator>();
+        _stringAnimator = transform.GetChild(3).GetComponent<Animator>();
     }
 }
