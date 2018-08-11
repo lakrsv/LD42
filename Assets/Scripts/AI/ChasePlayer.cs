@@ -21,9 +21,19 @@ using UnityEngine;
 [RequireComponent(typeof(FaceTarget))]
 public class ChasePlayer : MonoBehaviour
 {
+    public enum Acceleration
+    {
+        Slowest = 10,
+        Slow = 20,
+        Normal = 30,
+        Fast = 40,
+        Faster = 50,
+        Fastest = 60
+    }
+
     private const float MaxVelocity = 3f;
 
-    private readonly float _acceleration = 50f;
+    private readonly float _acceleration = (float)Acceleration.Normal;
 
     private Vector2 _movement;
 
@@ -43,7 +53,6 @@ public class ChasePlayer : MonoBehaviour
         _movement.Normalize();
 
         _rigidBody.AddForce(_movement * _acceleration);
-        _rigidBody.velocity = Vector2.ClampMagnitude(_rigidBody.velocity, MaxVelocity);
     }
 
     // Use this for initialization

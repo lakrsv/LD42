@@ -69,12 +69,13 @@
     <Compile Include="Assets\Demigiant\DOTween\Modules\DOTweenModuleUtils.cs" />
     <Compile Include="Assets\Imports\SimplexNoise-master\SimplexNoise\Noise.cs" />
     <Compile Include="Assets\Imports\SimplexNoise-master\SimplexNoise\Properties\AssemblyInfo.cs" />
+    <Compile Include="Assets\Scripts\Actors\Enemy.cs" />
+    <Compile Include="Assets\Scripts\Actors\PlayerInput.cs" />
     <Compile Include="Assets\Scripts\AI\ChasePlayer.cs" />
     <Compile Include="Assets\Scripts\Generation\GrassGenerator.cs" />
     <Compile Include="Assets\Scripts\Transform\FaceCursor.cs" />
     <Compile Include="Assets\Scripts\Transform\FaceTarget.cs" />
     <Compile Include="Assets\Scripts\Transform\LightFlicker.cs" />
-    <Compile Include="Assets\Scripts\Transform\PlayerInput.cs" />
     <Compile Include="Assets\Scripts\Utilities\Direction.cs" />
     <Compile Include="Assets\Scripts\Utilities\DontDestroy.cs" />
     <Compile Include="Assets\Scripts\Utilities\Extensions.cs" />

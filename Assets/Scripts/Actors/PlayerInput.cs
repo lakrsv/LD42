@@ -31,6 +31,11 @@ public class PlayerInput : MonoBehaviour
     [SerializeField]
     private Weapon[] _equippedWeapons;
 
+    private FaceCursor _faceCursor;
+
+    [SerializeField]
+    private Animator _walkAnimator;
+
     // Update is called once per frame
     private void FixedUpdate()
     {
@@ -52,17 +57,20 @@ public class PlayerInput : MonoBehaviour
 
         _rigidBody.AddForce(_movement * _acceleration);
         _rigidBody.velocity = Vector2.ClampMagnitude(_rigidBody.velocity, MaxVelocity);
+
+        _walkAnimator.SetFloat("WalkSpeed", _rigidBody.velocity.magnitude);
     }
 
     private void FireWeapon()
     {
         // TODO - Make accessible for controller
-        if (Input.GetMouseButton(0)) _equippedWeapons.ForEach(x => x.Fire());
+        if (Input.GetMouseButton(0)) _equippedWeapons.ForEach(x => x.Fire(_faceCursor.GetLastCursorPosition()));
     }
 
     // Use this for initialization
     private void Start()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
+        _faceCursor = GetComponent<FaceCursor>();
     }
 }

@@ -19,5 +19,5 @@ using UnityEngine;
 
 public interface IWeapon
 {
-    bool Fire();
+    bool Fire(Vector2 upDir);
 }

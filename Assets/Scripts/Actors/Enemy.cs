@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Weapon.cs" author="Lars" company="None">
+// <copyright file="Enemy.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -17,7 +17,45 @@
 
 using UnityEngine;
 
-public abstract class Weapon : MonoBehaviour, IWeapon
+public class Enemy : MonoBehaviour
 {
-    public abstract bool Fire(Vector2 upDir);
+    private float _health = 1f;
+
+    private Rigidbody2D _rigidBody;
+
+    private ChasePlayer _chasePlayer;
+
+    private FaceTarget _faceTarget;
+
+    public bool TakeDamage(float damage)
+    {
+        _health -= damage;
+
+        if (_health <= 0)
+        {
+            Die();
+            return true;
+        }
+
+        return false;
+    }
+
+    public void AddForce(Vector2 force)
+    {
+        _rigidBody.AddForce(force, ForceMode2D.Impulse);
+    }
+
+    private void Die()
+    {
+        _chasePlayer.enabled = false;
+        _faceTarget.enabled = false;
+        Debug.Log("I am dead.");
+    }
+
+    private void Awake()
+    {
+        _rigidBody = GetComponent<Rigidbody2D>();
+        _chasePlayer = GetComponent<ChasePlayer>();
+        _faceTarget = GetComponent<FaceTarget>();
+    }
 }

@@ -39,15 +39,19 @@ public class Crossbow : Weapon
     [SerializeField]
     private Transform _arrow;
 
-    public override bool Fire()
+    public override bool Fire(Vector2 cursorPosition)
     {
         var timePassed = Time.time - _lastFireTime;
         if (FireCooldown > timePassed) return false;
 
-        var trail = ObjectPools.Instance.GetPooledObject<ArrowTrail>();
+        var upDir = cursorPosition - (Vector2)transform.position;
+        upDir.Normalize();
 
-        var startPos = new Vector2(_arrow.position.x - (_arrow.up.x * 0.16f), _arrow.position.y - (_arrow.up.y * 0.16f));
-        trail.Move(startPos, 15 * _arrow.transform.up, 0.10f);
+        ProcessHits(upDir);
+
+        var trail = ObjectPools.Instance.GetPooledObject<ArrowTrail>();
+        var startPos = new Vector2(_arrow.position.x - (upDir.x * 0.16f), _arrow.position.y - (upDir.y * 0.16f));
+        trail.Move(startPos, 15 * upDir, 0.10f);
 
         _stringAnimator.SetTrigger(FireTrigger);
         _crossbowAnimator.SetTrigger(FireTrigger);
@@ -69,5 +73,24 @@ public class Crossbow : Weapon
     {
         _crossbowAnimator = GetComponent<Animator>();
         _stringAnimator = transform.GetChild(3).GetComponent<Animator>();
+    }
+
+    private void ProcessHits(Vector2 upDir)
+    {
+        var hits = Physics2D.RaycastAll(transform.position, upDir);
+
+        foreach (var hit in hits)
+        {
+            if (hit.transform.CompareTag("Enemy"))
+            {
+                var enemy = hit.transform.GetComponent<Enemy>();
+                enemy.TakeDamage(1f);
+
+                var force = enemy.transform.position - transform.position;
+                force.Normalize();
+
+                enemy.AddForce(force * 20f);
+            }
+        }
     }
 }

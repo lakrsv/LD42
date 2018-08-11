@@ -24,6 +24,8 @@ public class FaceCursor : MonoBehaviour
 
     private Camera _mainCamera;
 
+    private Vector2 _lastCursorPos;
+
     // Use this for initialization
     private void Start()
     {
@@ -38,5 +40,11 @@ public class FaceCursor : MonoBehaviour
         mouseWorldPos.z = 0;
 
         _transform.rotation = Quaternion.LookRotation(Vector3.forward, mouseWorldPos - _transform.position);
+        _lastCursorPos = mouseWorldPos;
+    }
+
+    public Vector2 GetLastCursorPosition()
+    {
+        return _lastCursorPos;
     }
 }
