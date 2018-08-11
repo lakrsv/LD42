@@ -1,0 +1,13 @@
+Corpse Pile - 
+Fill your corpse pile to increase light, 
+with the vampires that come running at you from the darkness.
+
+Visuals: 
+2D Top-down Pixel Art
+Simplistic color palette / black, green..?
+
+Mechanics:
+Vanquish vampires with an arsenal of weapons
+Carry vampires to pile to increase light
+Vampires enter from the darkness, burst into flames and chase you down
+The less light you have, the closer the vampires are.
