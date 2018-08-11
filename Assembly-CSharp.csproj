@@ -72,6 +72,7 @@
     <Compile Include="Assets\Scripts\Actors\Enemy.cs" />
     <Compile Include="Assets\Scripts\Actors\PlayerInput.cs" />
     <Compile Include="Assets\Scripts\AI\ChasePlayer.cs" />
+    <Compile Include="Assets\Scripts\FX\BloodSpray.cs" />
     <Compile Include="Assets\Scripts\Generation\GrassGenerator.cs" />
     <Compile Include="Assets\Scripts\Transform\FaceCursor.cs" />
     <Compile Include="Assets\Scripts\Transform\FaceTarget.cs" />

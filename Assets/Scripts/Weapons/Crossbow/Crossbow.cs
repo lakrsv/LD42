@@ -89,7 +89,7 @@ public class Crossbow : Weapon
                 var force = enemy.transform.position - transform.position;
                 force.Normalize();
 
-                enemy.AddForce(force * 20f);
+                enemy.DoImpact(force * 20f);
             }
         }
     }

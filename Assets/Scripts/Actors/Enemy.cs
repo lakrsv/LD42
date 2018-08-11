@@ -17,6 +17,8 @@
 
 using UnityEngine;
 
+using Utilities.ObjectPool;
+
 public class Enemy : MonoBehaviour
 {
     private float _health = 1f;
@@ -26,6 +28,12 @@ public class Enemy : MonoBehaviour
     private ChasePlayer _chasePlayer;
 
     private FaceTarget _faceTarget;
+
+    [SerializeField]
+    private Animator _walkAnimator;
+
+    [SerializeField]
+    private Animator _dieAnimator;
 
     public bool TakeDamage(float damage)
     {
@@ -40,15 +48,23 @@ public class Enemy : MonoBehaviour
         return false;
     }
 
-    public void AddForce(Vector2 force)
+    public void DoImpact(Vector2 force)
     {
         _rigidBody.AddForce(force, ForceMode2D.Impulse);
+
+        var bloodSpray = ObjectPools.Instance.GetPooledObject<BloodSpray>();
+        bloodSpray.transform.position = _rigidBody.position;
+        bloodSpray.transform.rotation = Quaternion.LookRotation(Vector3.forward, force);
+        ////bloodSpray.AddForce(force);
     }
 
     private void Die()
     {
         _chasePlayer.enabled = false;
         _faceTarget.enabled = false;
+        _walkAnimator.gameObject.SetActive(false);
+        _dieAnimator.gameObject.SetActive(true);
+
         Debug.Log("I am dead.");
     }
 
