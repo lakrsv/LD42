@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="PlayerInput.cs" author="Lars" company="None">
+// <copyright file="RandomProvider.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -15,40 +15,24 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-using UnityEngine;
+using System;
 
-[RequireComponent(typeof(Rigidbody2D))]
-public class PlayerInput : MonoBehaviour
+using JetBrains.Annotations;
+
+public class RandomProvider
 {
-    private const float MaxVelocity = 3f;
+    private const int Seed = 0;
 
-    private readonly float _acceleration = 50f;
+    [CanBeNull]
+    private static RandomProvider _instance;
 
-    private Vector2 _movement = new Vector2();
-
-    private Rigidbody2D _rigidBody;
-
-    // Update is called once per frame
-    private void FixedUpdate()
+    public RandomProvider(int seed)
     {
-        Move();
+        Random = new Random(seed);
     }
 
-    private void Move()
-    {
-        var inputH = Input.GetAxisRaw("Horizontal");
-        var inputV = Input.GetAxisRaw("Vertical");
+    [NotNull]
+    public static RandomProvider Instance => _instance ?? (_instance = new RandomProvider(Seed));
 
-        _movement.Set(inputH, inputV);
-        _movement.Normalize();
-
-        _rigidBody.AddForce(_movement * _acceleration);
-        _rigidBody.velocity = Vector2.ClampMagnitude(_rigidBody.velocity, MaxVelocity);
-    }
-
-    // Use this for initialization
-    private void Start()
-    {
-        _rigidBody = GetComponent<Rigidbody2D>();
-    }
+    public Random Random { get; }
 }

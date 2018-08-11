@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="PlayerInput.cs" author="Lars" company="None">
+// <copyright file="FaceCursor.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -17,38 +17,26 @@
 
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
-public class PlayerInput : MonoBehaviour
+[RequireComponent(typeof(Transform))]
+public class FaceCursor : MonoBehaviour
 {
-    private const float MaxVelocity = 3f;
+    private Transform _transform;
 
-    private readonly float _acceleration = 50f;
-
-    private Vector2 _movement = new Vector2();
-
-    private Rigidbody2D _rigidBody;
-
-    // Update is called once per frame
-    private void FixedUpdate()
-    {
-        Move();
-    }
-
-    private void Move()
-    {
-        var inputH = Input.GetAxisRaw("Horizontal");
-        var inputV = Input.GetAxisRaw("Vertical");
-
-        _movement.Set(inputH, inputV);
-        _movement.Normalize();
-
-        _rigidBody.AddForce(_movement * _acceleration);
-        _rigidBody.velocity = Vector2.ClampMagnitude(_rigidBody.velocity, MaxVelocity);
-    }
+    private Camera _mainCamera;
 
     // Use this for initialization
     private void Start()
     {
-        _rigidBody = GetComponent<Rigidbody2D>();
+        _transform = GetComponent<Transform>();
+        _mainCamera = Camera.main;
+    }
+
+    // Update is called once per frame
+    private void Update()
+    {
+        var mouseWorldPos = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorldPos.z = 0;
+
+        _transform.rotation = Quaternion.LookRotation(Vector3.forward, mouseWorldPos - _transform.position);
     }
 }

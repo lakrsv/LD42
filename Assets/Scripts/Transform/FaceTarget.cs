@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="RotateWithCursor.cs" author="Lars" company="None">
+// <copyright file="FaceTarget.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -18,25 +18,28 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Transform))]
-public class RotateWithCursor : MonoBehaviour
+public class FaceTarget : MonoBehaviour
 {
+    private Rigidbody2D _target;
+
     private Transform _transform;
 
-    private Camera _mainCamera;
+    public void SetTarget(Rigidbody2D target)
+    {
+        _target = target;
+    }
 
     // Use this for initialization
     private void Start()
     {
         _transform = GetComponent<Transform>();
-        _mainCamera = Camera.main;
     }
 
     // Update is called once per frame
     private void Update()
     {
-        var mouseWorldPos = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        mouseWorldPos.z = 0;
+        if (_target == null) return;
 
-        _transform.rotation = Quaternion.LookRotation(Vector3.forward, mouseWorldPos - _transform.position);
+        _transform.rotation = Quaternion.LookRotation(Vector3.forward, _target.position - (Vector2)_transform.position);
     }
 }

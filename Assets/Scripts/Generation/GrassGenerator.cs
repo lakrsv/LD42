@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="PlayerInput.cs" author="Lars" company="None">
+// <copyright file="GrassGenerator.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -15,40 +15,40 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using JetBrains.Annotations;
+
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
-public class PlayerInput : MonoBehaviour
+public class GrassGenerator : MonoBehaviour
 {
-    private const float MaxVelocity = 3f;
+    private const int MapHeight = 20;
 
-    private readonly float _acceleration = 50f;
+    private const int MapWidth = 20;
 
-    private Vector2 _movement = new Vector2();
+    [NotNull]
+    [SerializeField]
+    private SpriteRenderer _grassPrefab;
 
-    private Rigidbody2D _rigidBody;
+    [NotNull]
+    [SerializeField]
+    private Sprite[] _grassSprites;
 
-    // Update is called once per frame
-    private void FixedUpdate()
+    private void CreateGrass()
     {
-        Move();
-    }
-
-    private void Move()
-    {
-        var inputH = Input.GetAxisRaw("Horizontal");
-        var inputV = Input.GetAxisRaw("Vertical");
-
-        _movement.Set(inputH, inputV);
-        _movement.Normalize();
-
-        _rigidBody.AddForce(_movement * _acceleration);
-        _rigidBody.velocity = Vector2.ClampMagnitude(_rigidBody.velocity, MaxVelocity);
+        for (var x = -MapWidth / 2; x < MapWidth / 2; x++)
+        {
+            for (var y = -MapHeight / 2; y < MapHeight / 2; y++)
+            {
+                var grassSprite = _grassSprites[RandomProvider.Instance.Random.Next(0, _grassSprites.Length)];
+                var grassTile = Instantiate(_grassPrefab, new Vector3(x, y, 0), Quaternion.identity);
+                grassTile.sprite = grassSprite;
+            }
+        }
     }
 
     // Use this for initialization
     private void Start()
     {
-        _rigidBody = GetComponent<Rigidbody2D>();
+        CreateGrass();
     }
 }

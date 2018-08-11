@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="PlayerInput.cs" author="Lars" company="None">
+// <copyright file="ChasePlayer.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -18,13 +18,16 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class PlayerInput : MonoBehaviour
+[RequireComponent(typeof(FaceTarget))]
+public class ChasePlayer : MonoBehaviour
 {
     private const float MaxVelocity = 3f;
 
     private readonly float _acceleration = 50f;
 
-    private Vector2 _movement = new Vector2();
+    private Vector2 _movement;
+
+    private Rigidbody2D _player;
 
     private Rigidbody2D _rigidBody;
 
@@ -36,10 +39,7 @@ public class PlayerInput : MonoBehaviour
 
     private void Move()
     {
-        var inputH = Input.GetAxisRaw("Horizontal");
-        var inputV = Input.GetAxisRaw("Vertical");
-
-        _movement.Set(inputH, inputV);
+        _movement = _player.position - _rigidBody.position;
         _movement.Normalize();
 
         _rigidBody.AddForce(_movement * _acceleration);
@@ -50,5 +50,8 @@ public class PlayerInput : MonoBehaviour
     private void Start()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
+        _player = GameObject.Find("Player").GetComponent<Rigidbody2D>();
+
+        GetComponent<FaceTarget>().SetTarget(_player);
     }
 }
