@@ -19,7 +19,7 @@ using UnityEngine;
 
 using Utilities.ObjectPool;
 
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, IPoolable
 {
     private float _health = 1f;
 
@@ -34,6 +34,11 @@ public class Enemy : MonoBehaviour
 
     [SerializeField]
     private Animator _dieAnimator;
+
+    [SerializeField]
+    private GameObject _pickupRadius;
+
+    public bool IsEnabled => gameObject.activeInHierarchy;
 
     public bool TakeDamage(float damage)
     {
@@ -64,6 +69,11 @@ public class Enemy : MonoBehaviour
         _faceTarget.enabled = false;
         _walkAnimator.gameObject.SetActive(false);
         _dieAnimator.gameObject.SetActive(true);
+        _pickupRadius.gameObject.SetActive(true);
+
+        GameController.Instance.EnemiesKilled++;
+
+        ActorChoreographer.Instance.DeregisterEnemy(this);
 
         Debug.Log("I am dead.");
     }
@@ -73,5 +83,22 @@ public class Enemy : MonoBehaviour
         _rigidBody = GetComponent<Rigidbody2D>();
         _chasePlayer = GetComponent<ChasePlayer>();
         _faceTarget = GetComponent<FaceTarget>();
+    }
+
+    public void Enable()
+    {
+        gameObject.SetActive(true);
+        ActorChoreographer.Instance.RegisterEnemy(this);
+    }
+
+    public void Disable()
+    {
+        _chasePlayer.enabled = true;
+        _faceTarget.enabled = true;
+        _walkAnimator.gameObject.SetActive(true);
+        _dieAnimator.gameObject.SetActive(false);
+        _pickupRadius.gameObject.SetActive(false);
+
+        gameObject.SetActive(false);
     }
 }

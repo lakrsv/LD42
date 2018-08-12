@@ -15,6 +15,8 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+
 using JetBrains.Annotations;
 
 using UnityEngine;
@@ -79,8 +81,13 @@ public class Crossbow : Weapon
     {
         var hits = Physics2D.RaycastAll(transform.position, upDir);
 
+        var hitTransforms = new HashSet<Transform>();
+
         foreach (var hit in hits)
         {
+            if (hitTransforms.Contains(hit.transform)) continue;
+            hitTransforms.Add(hit.transform);
+
             if (hit.transform.CompareTag("Enemy"))
             {
                 var enemy = hit.transform.GetComponent<Enemy>();
@@ -89,7 +96,7 @@ public class Crossbow : Weapon
                 var force = enemy.transform.position - transform.position;
                 force.Normalize();
 
-                enemy.DoImpact(force * 20f);
+                enemy.DoImpact(force * 10f);
             }
         }
     }

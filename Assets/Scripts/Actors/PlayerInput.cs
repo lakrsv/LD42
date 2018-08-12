@@ -31,10 +31,19 @@ public class PlayerInput : MonoBehaviour
     [SerializeField]
     private Weapon[] _equippedWeapons;
 
+    private bool _equippedEnemy;
+
+    private Pyre _pyreInReach;
+
+    private Enemy _enemyInReach;
+
     private FaceCursor _faceCursor;
 
     [SerializeField]
     private Animator _walkAnimator;
+
+    [SerializeField]
+    private Transform _enemyEquipPosition;
 
     // Update is called once per frame
     private void FixedUpdate()
@@ -45,6 +54,7 @@ public class PlayerInput : MonoBehaviour
     private void Update()
     {
         FireWeapon();
+        HandleEnemy();
     }
 
     private void Move()
@@ -67,10 +77,62 @@ public class PlayerInput : MonoBehaviour
         if (Input.GetMouseButton(0)) _equippedWeapons.ForEach(x => x.Fire(_faceCursor.GetLastCursorPosition()));
     }
 
+    private void HandleEnemy()
+    {
+        if (!Input.GetMouseButtonDown(1)) return;
+        if (_enemyInReach == null && !_equippedEnemy) return;
+
+        if (!_equippedEnemy)
+        {
+            _enemyInReach.Disable();
+
+            _equippedEnemy = true;
+            _enemyInReach = null;
+
+            _enemyEquipPosition.gameObject.SetActive(true);
+
+        }
+        else
+        {
+            if (_pyreInReach != null)
+            {
+                _enemyEquipPosition.gameObject.SetActive(false);
+                _equippedEnemy = false;
+
+                _pyreInReach.AddFuel();
+                _pyreInReach = null;
+            }
+        }
+    }
+
     // Use this for initialization
     private void Start()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
         _faceCursor = GetComponent<FaceCursor>();
+    }
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        if (_equippedEnemy)
+        {
+            if (_pyreInReach == null)
+            {
+                if (other.CompareTag("Pyre"))
+                {
+                    _pyreInReach = other.GetComponent<Pyre>();
+                }
+            }
+        }
+        else
+        {
+            if (_enemyInReach == null)
+            {
+                if (other.CompareTag("Enemy"))
+                {
+                    _enemyInReach = other.transform.GetComponentInParent<Enemy>();
+                }
+            }
+        }
     }
 }
