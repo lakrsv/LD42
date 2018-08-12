@@ -37,7 +37,7 @@ public class Pyre : MonoBehaviour
 
     private List<Transform> _activeBurnupSprites = new List<Transform>();
 
-    private Vector3 _lightSourceIncreaseAmount = new Vector3(0.135f, 0.135f, 0.135f);
+    private Vector3 _lightSourceIncreaseAmount = new Vector3(0.1425f, 0.1425f, 0.1425f);
 
     private float _decreaseLightStrength = 0.05f;
 
