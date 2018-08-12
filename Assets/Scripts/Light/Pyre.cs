@@ -24,7 +24,14 @@ using UnityEngine;
 
 public class Pyre : MonoBehaviour
 {
-    private const float MaxLightSourceScale = 1.2f;
+    private const float MaxLightSourceScale = 2.0f;
+
+    private readonly List<Animator> _activeBurnupSprites = new List<Animator>();
+
+    private readonly float _decreaseLightStrength = 0.05f;
+
+    [SerializeField]
+    private List<Animator> _enemyBurnupSprites;
 
     [SerializeField]
     private Transform _fire;
@@ -32,23 +39,17 @@ public class Pyre : MonoBehaviour
     [SerializeField]
     private Transform _lightSource;
 
-    [SerializeField]
-    private List<Transform> _enemyBurnupSprites;
-
-    private List<Transform> _activeBurnupSprites = new List<Transform>();
-
-    private Vector3 _lightSourceIncreaseAmount = new Vector3(0.1425f, 0.1425f, 0.1425f);
-
-    private float _decreaseLightStrength = 0.05f;
+    private readonly Vector3 _lightSourceIncreaseAmount = new Vector3(0.09f, 0.09f, 0.09f);
 
     public void AddFuel()
     {
         _fire.DOShakeScale(0.25f, 2.0f);
 
-        var lightAreaScale = Vector2.ClampMagnitude(_lightSource.transform.localScale + _lightSourceIncreaseAmount, MaxLightSourceScale);
+        var lightAreaScale = Vector2.ClampMagnitude(
+            _lightSource.transform.localScale + _lightSourceIncreaseAmount,
+            MaxLightSourceScale);
 
-        _lightSource.DOScale(lightAreaScale, 0.25f)
-            .SetEase(Ease.OutBack);
+        _lightSource.DOScale(lightAreaScale, 0.25f).SetEase(Ease.OutBack);
 
         if (_enemyBurnupSprites.Count > 0)
         {
@@ -56,12 +57,32 @@ public class Pyre : MonoBehaviour
             _enemyBurnupSprites.Remove(burnupSprite);
 
             burnupSprite.gameObject.SetActive(true);
+            burnupSprite.SetTrigger("Reset");
+
             _activeBurnupSprites.Add(burnupSprite);
 
             StartCoroutine(ReturnBurnupSpriteToPool(burnupSprite));
+
+            var playerPos = ActorChoreographer.Instance.Player.transform.position;
+
+            var throwSequence = DOTween.Sequence();
+            throwSequence.Append(burnupSprite.transform.DOMove(playerPos, 0.5f).From().SetEase(Ease.OutSine));
+            throwSequence.Insert(0f, burnupSprite.transform.DOScale(4.0f, 0.25f).SetEase(Ease.OutSine));
+            throwSequence.Insert(0.125f, burnupSprite.transform.DOScale(2.0f, 0.25f).SetEase(Ease.InSine));
+            throwSequence.OnComplete(() => burnupSprite.SetTrigger("Animate"));
         }
 
         GameController.Instance.EnemiesBurned++;
+    }
+
+    private IEnumerator ReturnBurnupSpriteToPool(Animator burnupSprite)
+    {
+        yield return new WaitForSeconds(1.0f);
+
+        burnupSprite.SetTrigger("Reset");
+        _activeBurnupSprites.Remove(burnupSprite);
+        _enemyBurnupSprites.Add(burnupSprite);
+        burnupSprite.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -72,16 +93,9 @@ public class Pyre : MonoBehaviour
             _decreaseLightStrength * Time.deltaTime);
 
         var fireScale = 5f * (_lightSource.localScale.magnitude / MaxLightSourceScale);
-        _fire.localScale = Vector2.MoveTowards(_fire.localScale, new Vector2(fireScale, fireScale), 5f * Time.deltaTime);
-
-    }
-
-    private IEnumerator ReturnBurnupSpriteToPool(Transform burnupSprite)
-    {
-        yield return new WaitForSeconds(1.0f);
-
-        _activeBurnupSprites.Remove(burnupSprite);
-        _enemyBurnupSprites.Add(burnupSprite);
-        burnupSprite.gameObject.SetActive(false);
+        _fire.localScale = Vector2.MoveTowards(
+            _fire.localScale,
+            new Vector2(fireScale, fireScale),
+            5f * Time.deltaTime);
     }
 }

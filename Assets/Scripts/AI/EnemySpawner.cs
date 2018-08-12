@@ -23,7 +23,9 @@ using Utilities.ObjectPool;
 
 public class EnemySpawner : MonoBehaviour
 {
-    private const float SpawnDistance = 15f;
+    private const int MinSpawnDistance = 7;
+
+    private const int MaxSpawnDistance = 15;
 
     private int _minEnemies = 1;
 
@@ -47,9 +49,9 @@ public class EnemySpawner : MonoBehaviour
             {
                 // Spawn enemies.
                 var enemy = pool.GetPooledObject<Enemy>();
-                var enemyPos = GetPositionOnCircle(random.Next(0, 360), SpawnDistance);
-                var enemyHealth = RandomProvider.Instance.Random.Next(1, 1 + GameController.Instance.EnemiesBurned / 20);
-
+                var enemyPos = GetPositionOnCircle(random.Next(0, 360), (float)random.Next(MinSpawnDistance, MaxSpawnDistance));
+                var enemyHealth = Mathf.Min(3, RandomProvider.Instance.Random.Next(1, 1 + GameController.Instance.EnemiesBurned / 20));
+                enemy.SetAcceleration(GetAcceleration());
                 enemy.Health = enemyHealth;
                 enemy.transform.position = enemyPos;
             }
@@ -65,5 +67,25 @@ public class EnemySpawner : MonoBehaviour
         var y = radius * Mathf.Sin(angleRadians);
 
         return new Vector2(x, y);
+    }
+
+    private ChasePlayer.Acceleration GetAcceleration()
+    {
+        var rand = RandomProvider.Instance.Random.Next(0, 100);
+        
+        if (rand <= 2)
+        {
+            return ChasePlayer.Acceleration.Faster;
+        }
+        else if (rand <= 35)
+        {
+            return ChasePlayer.Acceleration.Normal;
+        }
+        else if (rand <= 100)
+        {
+            return ChasePlayer.Acceleration.Slow;
+        }
+
+        return ChasePlayer.Acceleration.Normal;
     }
 }

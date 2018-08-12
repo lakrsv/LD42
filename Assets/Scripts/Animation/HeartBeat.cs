@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="GameController.cs" author="Lars" company="None">
+// <copyright file="HeartBeat.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -15,23 +15,18 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-using Utilities;
+using DG.Tweening;
 
-public class GameController : MonoSingleton<GameController>
+using UnityEngine;
+
+public class HeartBeat : MonoBehaviour
 {
-    public bool IsPlaying = true;
-
-    public int EnemiesKilled;
-
-    public int EnemiesBurned;
-
-    public int SuperCounter = 5;
-
-    public int Score
+    private void OnEnable()
     {
-        get
-        {
-            return (int)(EnemiesKilled / 10f + EnemiesBurned / 20f);
-        }
+        var seq = DOTween.Sequence();
+        seq.SetLoops(-1);
+        seq.Append(transform.DOScale(1.2f, 0.25f).SetEase(Ease.OutBounce));
+        seq.Append(transform.DOScale(1.0f, 0.125f).SetEase(Ease.InOutBack));
+        seq.AppendInterval(0.5f);
     }
 }

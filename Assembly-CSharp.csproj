@@ -74,6 +74,7 @@
     <Compile Include="Assets\Scripts\Actors\PlayerInput.cs" />
     <Compile Include="Assets\Scripts\AI\ChasePlayer.cs" />
     <Compile Include="Assets\Scripts\AI\EnemySpawner.cs" />
+    <Compile Include="Assets\Scripts\Animation\HeartBeat.cs" />
     <Compile Include="Assets\Scripts\FX\BloodSpray.cs" />
     <Compile Include="Assets\Scripts\GameController.cs" />
     <Compile Include="Assets\Scripts\Generation\GrassGenerator.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="Assets\Scripts\Transform\FaceCursor.cs" />
     <Compile Include="Assets\Scripts\Transform\FaceTarget.cs" />
     <Compile Include="Assets\Scripts\Transform\LightFlicker.cs" />
+    <Compile Include="Assets\Scripts\UI\HealthDisplay.cs" />
     <Compile Include="Assets\Scripts\Utilities\Direction.cs" />
     <Compile Include="Assets\Scripts\Utilities\DontDestroy.cs" />
     <Compile Include="Assets\Scripts\Utilities\Extensions.cs" />

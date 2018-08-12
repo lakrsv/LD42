@@ -33,7 +33,7 @@ public class ChasePlayer : MonoBehaviour
 
     private const float MaxVelocity = 3f;
 
-    private readonly float _acceleration = (float)Acceleration.Normal;
+    private float _acceleration = (float)Acceleration.Normal;
 
     private Vector2 _movement;
 
@@ -53,6 +53,11 @@ public class ChasePlayer : MonoBehaviour
         _movement.Normalize();
 
         _rigidBody.AddForce(_movement * _acceleration);
+    }
+
+    public void SetAcceleration(Acceleration acceleration)
+    {
+        _acceleration = (float)acceleration;
     }
 
     // Use this for initialization

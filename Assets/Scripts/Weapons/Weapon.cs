@@ -15,9 +15,13 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
+
 using UnityEngine;
 
 public abstract class Weapon : MonoBehaviour, IWeapon
 {
     public abstract bool Fire(Vector2 upDir);
+
+    public float FireCooldown = 1.0f;
 }

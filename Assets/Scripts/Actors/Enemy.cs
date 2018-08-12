@@ -21,6 +21,10 @@ using Utilities.ObjectPool;
 
 public class Enemy : MonoBehaviour, IPoolable
 {
+    private const float AttackCooldown = 2.0f;
+
+    private float _lastAttackTime;
+
     public float Health = 1f;
 
     private Rigidbody2D _rigidBody;
@@ -75,6 +79,7 @@ public class Enemy : MonoBehaviour, IPoolable
         _pickupRadius.gameObject.SetActive(true);
 
         GameController.Instance.EnemiesKilled++;
+        GameController.Instance.SuperCounter--;
 
         ActorChoreographer.Instance.DeregisterEnemy(this);
 
@@ -100,6 +105,8 @@ public class Enemy : MonoBehaviour, IPoolable
     {
         CancelInvoke();
 
+        ActorChoreographer.Instance.DeregisterEnemy(this);
+
         _chasePlayer.enabled = true;
         _faceTarget.enabled = true;
         _walkAnimator.gameObject.SetActive(true);
@@ -110,10 +117,36 @@ public class Enemy : MonoBehaviour, IPoolable
         gameObject.SetActive(false);
     }
 
+    public void SetAcceleration(ChasePlayer.Acceleration acceleration)
+    {
+        _chasePlayer.SetAcceleration(acceleration);
+    }
+
     private void Expire()
     {
         _dieAnimator.gameObject.SetActive(false);
         _expireAnimator.gameObject.SetActive(true);
         Invoke(nameof(Disable), 2.2f);
+    }
+
+    private void OnCollisionStay2D(Collision2D other)
+    {
+        if (!_chasePlayer.enabled) return;
+
+        if (other.transform.CompareTag("Player"))
+        {
+            if (AttackCooldown > Time.time - _lastAttackTime) return;
+            _lastAttackTime = Time.time;
+
+            var player = ActorChoreographer.Instance.Player;
+            player.TakeDamage(1f);
+
+            var dir = player.transform.position - transform.position;
+
+            var bloodSpray = ObjectPools.Instance.GetPooledObject<BloodSpray>();
+            bloodSpray.transform.position = player.transform.position;
+            bloodSpray.transform.rotation = Quaternion.LookRotation(Vector3.forward, dir);
+            bloodSpray.AddForce(dir.normalized * 20f);
+        }
     }
 }

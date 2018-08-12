@@ -24,26 +24,54 @@ public class PlayerInput : MonoBehaviour
 
     private readonly float _acceleration = 50f;
 
-    private Vector2 _movement = new Vector2();
+    [SerializeField]
+    private Transform _enemyEquipPosition;
 
-    private Rigidbody2D _rigidBody;
+    private Enemy _enemyInReach;
+
+    private bool _equippedEnemy;
 
     [SerializeField]
     private Weapon[] _equippedWeapons;
 
-    private bool _equippedEnemy;
+    private FaceCursor _faceCursor;
+
+    [SerializeField]
+    private HealthDisplay _healthDisplay;
+
+    private Vector2 _movement = new Vector2();
+
+    [SerializeField]
+    private Pyre _pyre;
 
     private Pyre _pyreInReach;
 
-    private Enemy _enemyInReach;
-
-    private FaceCursor _faceCursor;
+    private Rigidbody2D _rigidBody;
 
     [SerializeField]
     private Animator _walkAnimator;
 
     [SerializeField]
-    private Transform _enemyEquipPosition;
+    private GameObject _superEffects;
+
+    private bool _disableInput;
+
+    public void TakeDamage(float amount)
+    {
+        _healthDisplay.RemoveHealth();
+    }
+
+    private void FireWeapon()
+    {
+        // TODO - Make accessible for controller
+        if (Input.GetMouseButton(0)) _equippedWeapons.ForEach(x =>
+            {
+                if (x.gameObject.activeInHierarchy)
+                {
+                    x.Fire(_faceCursor.GetLastCursorPosition());
+                }
+            });
+    }
 
     // Update is called once per frame
     private void FixedUpdate()
@@ -51,35 +79,8 @@ public class PlayerInput : MonoBehaviour
         Move();
     }
 
-    private void Update()
-    {
-        FireWeapon();
-        HandleEnemy();
-    }
-
-    private void Move()
-    {
-        var inputH = Input.GetAxisRaw("Horizontal");
-        var inputV = Input.GetAxisRaw("Vertical");
-
-        _movement.Set(inputH, inputV);
-        _movement.Normalize();
-
-        _rigidBody.AddForce(_movement * _acceleration);
-        _rigidBody.velocity = Vector2.ClampMagnitude(_rigidBody.velocity, MaxVelocity);
-
-        _walkAnimator.SetFloat("WalkSpeed", _rigidBody.velocity.magnitude);
-    }
-
-    private void FireWeapon()
-    {
-        // TODO - Make accessible for controller
-        if (Input.GetMouseButton(0)) _equippedWeapons.ForEach(x => x.Fire(_faceCursor.GetLastCursorPosition()));
-    }
-
     private void HandleEnemy()
     {
-        if (!Input.GetMouseButtonDown(1)) return;
         if (_enemyInReach == null && !_equippedEnemy) return;
 
         if (!_equippedEnemy)
@@ -90,7 +91,6 @@ public class PlayerInput : MonoBehaviour
             _enemyInReach = null;
 
             _enemyEquipPosition.gameObject.SetActive(true);
-
         }
         else
         {
@@ -105,11 +105,18 @@ public class PlayerInput : MonoBehaviour
         }
     }
 
-    // Use this for initialization
-    private void Start()
+    private void Move()
     {
-        _rigidBody = GetComponent<Rigidbody2D>();
-        _faceCursor = GetComponent<FaceCursor>();
+        var inputH = Input.GetAxisRaw("Horizontal");
+        var inputV = Input.GetAxisRaw("Vertical");
+
+        _movement.Set(inputH, inputV);
+        _movement.Normalize();
+
+        _rigidBody.AddForce(_movement * _acceleration);
+        _rigidBody.velocity = Vector2.ClampMagnitude(_rigidBody.velocity, MaxVelocity);
+
+        _walkAnimator.SetFloat("WalkSpeed", _rigidBody.velocity.magnitude);
     }
 
     private void OnTriggerStay2D(Collider2D other)
@@ -134,5 +141,64 @@ public class PlayerInput : MonoBehaviour
                 }
             }
         }
+    }
+
+    // Use this for initialization
+    private void Start()
+    {
+        _rigidBody = GetComponent<Rigidbody2D>();
+        _faceCursor = GetComponent<FaceCursor>();
+    }
+
+    private void Update()
+    {
+        if (_disableInput) return;
+
+        FireWeapon();
+        HandleEnemy();
+
+        if (GameController.Instance.SuperCounter <= 0)
+        {
+            GameController.Instance.SuperCounter = 100000000;
+            EnableSuperMode();
+        }
+    }
+
+    private void EnableSuperMode()
+    {
+        Debug.Log("SUPER SAYAN");
+
+        _equippedWeapons[0].FireCooldown = 0.5f;
+        _equippedWeapons[1].FireCooldown = 0.75f;
+        _equippedWeapons[1].gameObject.SetActive(true);
+
+        _healthDisplay.AddHealth();
+        _healthDisplay.AddHealth();
+
+        _pyre.AddFuel();
+
+        var enemies = ActorChoreographer.Instance.Enemies.ToArray();
+        enemies.ForEach(x =>
+            {
+                if (!x.enabled) return;
+                var impactDir = transform.position - x.transform.position;
+                x.DoImpact(impactDir.normalized * 10f);
+                x.TakeDamage(RandomProvider.Instance.Random.Next(0, 2));
+            });
+
+        _superEffects.gameObject.SetActive(true);
+
+        Invoke(nameof(DisableSuperMode), 8.5f);
+    }
+
+    private void DisableSuperMode()
+    {
+        _superEffects.gameObject.SetActive(false);
+
+        GameController.Instance.SuperCounter = 10;
+        _equippedWeapons[0].FireCooldown = 1.0f;
+        _equippedWeapons[1].FireCooldown = 1.0f;
+
+        _equippedWeapons[1].gameObject.SetActive(false);
     }
 }

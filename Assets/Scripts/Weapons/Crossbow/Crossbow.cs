@@ -26,8 +26,6 @@ using Utilities.ObjectPool;
 [RequireComponent(typeof(Animator))]
 public class Crossbow : Weapon
 {
-    private const float FireCooldown = 1.0f;
-
     private const string FireTrigger = "Fire";
 
     private const string ReloadTrigger = "Reload";
