@@ -120,9 +120,9 @@ public class PlayerInput : MonoBehaviour
 
     private IEnumerator GameOverRoutine()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1.0f);
         _pyre.Extinquish();
-        yield return new WaitForSeconds(0.25f);
+        yield return new WaitForSeconds(0.5f);
         _gameOverText.DOColor(Color.clear, 0.25f).From().OnStart(() => _gameOverText.gameObject.SetActive(true));
         yield return new WaitForSeconds(1.5f);
         SceneManager.LoadScene("SplashScreen");
@@ -144,10 +144,6 @@ public class PlayerInput : MonoBehaviour
 
     private void EnableSuperMode()
     {
-        ScoreDisplay.Instance.AddScore(100, 10, "- SLAYER", transform.position);
-
-        Debug.Log("SUPER SAYAN");
-
         _equippedWeapons[0].FireCooldown = 0.5f;
         _equippedWeapons[1].FireCooldown = 0.75f;
         _equippedWeapons[1].gameObject.SetActive(true);
@@ -158,6 +154,9 @@ public class PlayerInput : MonoBehaviour
         _pyre.AddFuel(false);
 
         var enemies = ActorChoreographer.Instance.Enemies.ToArray();
+        Enemy closestEnemy = null;
+        var minDistance = Mathf.Infinity;
+
         enemies.ForEach(
             x =>
                 {
@@ -165,7 +164,19 @@ public class PlayerInput : MonoBehaviour
                     var impactDir = x.transform.position - transform.position;
                     x.DoImpact(impactDir.normalized * 20f);
                     x.TakeDamage(RandomProvider.Instance.Random.Next(0, 2));
+
+                    var distance = Vector2.Distance(x.transform.position, transform.position);
+                    if (minDistance > distance)
+                    {
+                        closestEnemy = x;
+                        minDistance = distance;
+                    }
                 });
+
+        if (closestEnemy != null)
+        {
+            ScoreDisplay.Instance.AddScore(100, enemies.Length, "- SLAYER", closestEnemy.transform.position);
+        }
 
         _superEffects.gameObject.SetActive(true);
 
@@ -290,7 +301,7 @@ public class PlayerInput : MonoBehaviour
             _noLightFadeAudioTween.Pause();
 
             _noLightAudioPlayer.Play();
-            _noLightAudioPlayer.volume = 0.25f;
+            _noLightAudioPlayer.volume = 0.5f;
         }
     }
 
