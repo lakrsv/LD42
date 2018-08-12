@@ -75,6 +75,7 @@
     <Compile Include="Assets\Scripts\AI\ChasePlayer.cs" />
     <Compile Include="Assets\Scripts\AI\EnemySpawner.cs" />
     <Compile Include="Assets\Scripts\Animation\HeartBeat.cs" />
+    <Compile Include="Assets\Scripts\Audio\AudioPlayer.cs" />
     <Compile Include="Assets\Scripts\FX\BloodSpray.cs" />
     <Compile Include="Assets\Scripts\FX\DashSmoke.cs" />
     <Compile Include="Assets\Scripts\GameController.cs" />

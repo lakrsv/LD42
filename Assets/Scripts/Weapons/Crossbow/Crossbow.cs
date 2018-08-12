@@ -57,6 +57,8 @@ public class Crossbow : Weapon
         _crossbowAnimator.SetTrigger(FireTrigger);
         _lastFireTime = Time.time;
 
+        AudioPlayer.Instance.PlayOneShot(AudioPlayer.Instance.Shoot, 0.25f);
+
         Invoke(nameof(Reload), 0.2f);
 
         return true;
@@ -107,6 +109,11 @@ public class Crossbow : Weapon
 
                 enemy.DoImpact(force * 10f);
             }
+        }
+
+        if (firstHitPosition.HasValue)
+        {
+            AudioPlayer.Instance.PlayOneShot(AudioPlayer.Instance.EnemyHit, 0.1f);
         }
 
         if (deathCount > 0)

@@ -65,7 +65,8 @@ public class Pyre : MonoBehaviour
 
             var playerPos = ActorChoreographer.Instance.Player.transform.position;
 
-            var throwSequence = DOTween.Sequence();
+            var throwSequence = DOTween.Sequence().OnStart(
+                () => AudioPlayer.Instance.PlayOneShot(AudioPlayer.Instance.ThrowCorpse, 0.10f));
             throwSequence.Append(burnupSprite.transform.DOMove(playerPos, 0.5f).From().SetEase(Ease.OutSine));
             throwSequence.Insert(0f, burnupSprite.transform.DOScale(4.0f, 0.25f).SetEase(Ease.OutSine));
             throwSequence.Insert(0.125f, burnupSprite.transform.DOScale(2.0f, 0.25f).SetEase(Ease.InSine));
@@ -76,6 +77,8 @@ public class Pyre : MonoBehaviour
                         var popupPos = burnupSprite.targetPosition;
                         popupPos.y -= 0.25f;
                         ScoreDisplay.Instance.AddScore(100, 1, "- Light", popupPos);
+
+                        AudioPlayer.Instance.PlayOneShot(AudioPlayer.Instance.CorpseBurn, 0.10f);
                     }
 
                     burnupSprite.SetTrigger("Animate");

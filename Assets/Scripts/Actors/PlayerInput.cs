@@ -87,15 +87,25 @@ public class PlayerInput : MonoBehaviour
     [SerializeField]
     private GameObject _dashAnimate;
 
+    [SerializeField]
+    private AudioSource _noLightAudioPlayer;
+
+    private Tween _noLightFadeAudioTween;
+
 
     public void TakeDamage(float amount)
     {
+        if (_disableInput) return;
+
+        AudioPlayer.Instance.PlayOneShot(AudioPlayer.Instance.EnemyHit, 0.25f);
         _healthDisplay.RemoveHealth();
     }
 
     private void Die()
     {
         if (_disableInput) return;
+
+        AudioPlayer.Instance.PlayOneShot(AudioPlayer.Instance.Die, 0.05f);
 
         _disableInput = true;
         _dieAnimator.gameObject.SetActive(true);
@@ -114,7 +124,7 @@ public class PlayerInput : MonoBehaviour
         _pyre.Extinquish();
         yield return new WaitForSeconds(0.25f);
         _gameOverText.DOColor(Color.clear, 0.25f).From().OnStart(() => _gameOverText.gameObject.SetActive(true));
-        yield return new WaitForSeconds(1.25f);
+        yield return new WaitForSeconds(1.5f);
         SceneManager.LoadScene("SplashScreen");
     }
 
@@ -161,6 +171,8 @@ public class PlayerInput : MonoBehaviour
 
         _acceleration = 80f;
         _maxVelocity = 5f;
+
+        AudioPlayer.Instance.PlayOneShot(AudioPlayer.Instance.Powerup, 0.10f);
 
         Invoke(nameof(DisableSuperMode), 8.5f);
     }
@@ -243,6 +255,8 @@ public class PlayerInput : MonoBehaviour
 
             _rigidBody.position = _rigidBody.position + _movement;
             _dashAnimate.SetActive(true);
+
+            AudioPlayer.Instance.PlayOneShot(AudioPlayer.Instance.Dash, 0.08f);
         }
 
     }
@@ -253,6 +267,15 @@ public class PlayerInput : MonoBehaviour
         {
             Debug.Log("Entered light");
             _inLight = true;
+
+            if (_noLightFadeAudioTween != null)
+            {
+                _noLightFadeAudioTween.Restart();
+            }
+            else
+            {
+                _noLightFadeAudioTween = _noLightAudioPlayer.DOFade(0f, 0.25f).OnComplete(() => _noLightAudioPlayer.Stop()).SetAutoKill(false);
+            }
         }
     }
 
@@ -263,6 +286,11 @@ public class PlayerInput : MonoBehaviour
             Debug.Log("Left light");
             _inLight = false;
             _lightExitTime = Time.time;
+
+            _noLightFadeAudioTween.Pause();
+
+            _noLightAudioPlayer.Play();
+            _noLightAudioPlayer.volume = 0.25f;
         }
     }
 
