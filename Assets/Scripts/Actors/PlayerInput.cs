@@ -120,6 +120,8 @@ public class PlayerInput : MonoBehaviour
 
     private IEnumerator GameOverRoutine()
     {
+        BackgroundAudioPlayer.Instance.FadeOut(2.5f);
+
         yield return new WaitForSeconds(1.0f);
         _pyre.Extinquish();
         yield return new WaitForSeconds(0.5f);
@@ -301,7 +303,7 @@ public class PlayerInput : MonoBehaviour
             _noLightFadeAudioTween.Pause();
 
             _noLightAudioPlayer.Play();
-            _noLightAudioPlayer.volume = 0.5f;
+            _noLightAudioPlayer.volume = 1.0f;
         }
     }
 

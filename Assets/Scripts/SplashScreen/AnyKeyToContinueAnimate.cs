@@ -24,11 +24,23 @@ using UnityEngine.SceneManagement;
 
 public class AnyKeyToContinueAnimate : MonoBehaviour
 {
+    private bool _startingGame;
+
+    [SerializeField]
+    private AudioSource _backgroundAudio;
+
+    [SerializeField]
+    private CanvasGroup _canvasGroup;
+
     private void Update()
     {
+        if (_startingGame) return;
         if (Input.anyKeyDown)
         {
-            SceneManager.LoadScene("Gameplay");
+            _startingGame = true;
+
+            _backgroundAudio.DOFade(0f, 1.5f);
+            _canvasGroup.DOFade(0f, 1.5f).OnComplete(() => { SceneManager.LoadScene("Gameplay"); });
         }
     }
 
@@ -40,4 +52,5 @@ public class AnyKeyToContinueAnimate : MonoBehaviour
         appearSequence.AppendInterval(0.5f);
         appearSequence.Append(txt.DOColor(Color.clear, 1.0f).From());
     }
+
 }
