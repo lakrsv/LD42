@@ -45,10 +45,14 @@ public class Enemy : MonoBehaviour, IPoolable
     [SerializeField]
     private GameObject _pickupRadius;
 
+    private bool _isDead;
+
     public bool IsEnabled => gameObject.activeInHierarchy;
 
     public bool TakeDamage(float damage)
     {
+        if (_isDead) return false;
+
         Health -= damage;
 
         if (Health <= 0)
@@ -72,6 +76,7 @@ public class Enemy : MonoBehaviour, IPoolable
 
     private void Die()
     {
+        _isDead = true;
         _chasePlayer.enabled = false;
         _faceTarget.enabled = false;
         _walkAnimator.gameObject.SetActive(false);
@@ -97,6 +102,7 @@ public class Enemy : MonoBehaviour, IPoolable
 
     public void Enable()
     {
+        _isDead = false;
         gameObject.SetActive(true);
         ActorChoreographer.Instance.RegisterEnemy(this);
     }
@@ -107,6 +113,7 @@ public class Enemy : MonoBehaviour, IPoolable
 
         ActorChoreographer.Instance.DeregisterEnemy(this);
 
+        _isDead = false;
         _chasePlayer.enabled = true;
         _faceTarget.enabled = true;
         _walkAnimator.gameObject.SetActive(true);

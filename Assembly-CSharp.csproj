@@ -83,6 +83,8 @@
     <Compile Include="Assets\Scripts\Transform\FaceTarget.cs" />
     <Compile Include="Assets\Scripts\Transform\LightFlicker.cs" />
     <Compile Include="Assets\Scripts\UI\HealthDisplay.cs" />
+    <Compile Include="Assets\Scripts\UI\ModifierPopup.cs" />
+    <Compile Include="Assets\Scripts\UI\ScoreDisplay.cs" />
     <Compile Include="Assets\Scripts\Utilities\Direction.cs" />
     <Compile Include="Assets\Scripts\Utilities\DontDestroy.cs" />
     <Compile Include="Assets\Scripts\Utilities\Extensions.cs" />
@@ -97,9 +99,26 @@
     <Compile Include="Assets\Scripts\Weapons\Crossbow\Crossbow.cs" />
     <Compile Include="Assets\Scripts\Weapons\IWeapon.cs" />
     <Compile Include="Assets\Scripts\Weapons\Weapon.cs" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface-Mobile.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro_Properties.cginc" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
+    <None Include="Assets\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Masking.shader" />
     <None Include="Assets\Demigiant\DOTween\readme.txt" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap-Mobile.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF Overlay.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro_Surface.cginc" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Overlay.shader" />
     <None Include="Assets\Planning\Corpse Pile.txt" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />
     <None Include="Assets\Planning\Game Ideas.txt" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Sprite.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface.shader" />
     <Reference Include="Unity.2D.PixelPerfect.Editor">
       <HintPath>C:/Users/lakrs/Documents/CreativeWork/UnityProjects/LD42-RunningOutOfSpace/Library/ScriptAssemblies/Unity.2D.PixelPerfect.Editor.dll</HintPath>
     </Reference>

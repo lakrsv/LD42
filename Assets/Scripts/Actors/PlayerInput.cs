@@ -22,7 +22,7 @@ public class PlayerInput : MonoBehaviour
 {
     private const float MaxVelocity = 3f;
 
-    private const float NoLightDieTimer = 3.0f;
+    private const float NoLightDieTimer = 1.5f;
 
     private readonly float _acceleration = 50f;
 
@@ -113,8 +113,8 @@ public class PlayerInput : MonoBehaviour
             x =>
                 {
                     if (!x.enabled) return;
-                    var impactDir = transform.position - x.transform.position;
-                    x.DoImpact(impactDir.normalized * 10f);
+                    var impactDir = x.transform.position - transform.position;
+                    x.DoImpact(impactDir.normalized * 20f);
                     x.TakeDamage(RandomProvider.Instance.Random.Next(0, 2));
                 });
 
@@ -253,7 +253,7 @@ public class PlayerInput : MonoBehaviour
 
         if (!_inLight)
         {
-            if (NoLightDieTimer >= Time.time - _lightExitTime)
+            if (NoLightDieTimer <= Time.time - _lightExitTime)
             {
                 for (var i = 0; i < 8; ++i)
                 {

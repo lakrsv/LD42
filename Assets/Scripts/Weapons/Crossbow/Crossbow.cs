@@ -81,6 +81,10 @@ public class Crossbow : Weapon
 
         var hitTransforms = new HashSet<Transform>();
 
+        var deathCount = 0;
+
+        Vector2? firstHitPosition = null;
+
         foreach (var hit in hits)
         {
             if (hitTransforms.Contains(hit.transform)) continue;
@@ -88,14 +92,27 @@ public class Crossbow : Weapon
 
             if (hit.transform.CompareTag("Enemy"))
             {
+                if (!firstHitPosition.HasValue)
+                {
+                    firstHitPosition = hit.transform.position;
+                }
+
                 var enemy = hit.transform.GetComponent<Enemy>();
-                enemy.TakeDamage(1f);
+                var died = enemy.TakeDamage(1f);
+
+                if (died) deathCount++;
 
                 var force = enemy.transform.position - transform.position;
                 force.Normalize();
 
                 enemy.DoImpact(force * 10f);
             }
+        }
+
+        if (deathCount > 0)
+        {
+            var popupPos = firstHitPosition ?? transform.position;
+            ScoreDisplay.Instance.AddScore(100, deathCount, "- Kills", popupPos);
         }
     }
 }
