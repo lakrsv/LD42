@@ -3070,6 +3070,9 @@ MonoBehaviour:
   - Amount: 5
     CanExpand: 1
     Prefab: {fileID: 1789342848315886, guid: 80c387e0a90a699469c4d935b620a6ff, type: 2}
+  - Amount: 3
+    CanExpand: 1
+    Prefab: {fileID: 1924706327470360, guid: 4b37107837dfce34c9047d4892598a7c, type: 2}
 --- !u!4 &1783143504
 Transform:
   m_ObjectHideFlags: 0

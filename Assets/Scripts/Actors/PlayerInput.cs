@@ -17,14 +17,20 @@
 
 using UnityEngine;
 
+using Utilities.ObjectPool;
+
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerInput : MonoBehaviour
 {
-    private const float MaxVelocity = 3f;
+    private const float DashCooldown = 1.5f;
+
+    private float _lastDashTime;
+
+    private float _maxVelocity = 3f;
 
     private const float NoLightDieTimer = 1.5f;
 
-    private readonly float _acceleration = 50f;
+    private float _acceleration = 50f;
 
     [SerializeField]
     private Animator _dieAnimator;
@@ -68,6 +74,9 @@ public class PlayerInput : MonoBehaviour
     [SerializeField]
     private Animator _walkAnimator;
 
+    [SerializeField]
+    private GameObject _dashAnimate;
+
     public void TakeDamage(float amount)
     {
         _healthDisplay.RemoveHealth();
@@ -93,10 +102,15 @@ public class PlayerInput : MonoBehaviour
         _equippedWeapons[1].FireCooldown = 1.0f;
 
         _equippedWeapons[1].gameObject.SetActive(false);
+
+        _acceleration = 50f;
+        _maxVelocity = 3f;
     }
 
     private void EnableSuperMode()
     {
+        ScoreDisplay.Instance.AddScore(100, 10, "- SLAYER", transform.position);
+
         Debug.Log("SUPER SAYAN");
 
         _equippedWeapons[0].FireCooldown = 0.5f;
@@ -106,7 +120,7 @@ public class PlayerInput : MonoBehaviour
         _healthDisplay.AddHealth();
         _healthDisplay.AddHealth();
 
-        _pyre.AddFuel();
+        _pyre.AddFuel(false);
 
         var enemies = ActorChoreographer.Instance.Enemies.ToArray();
         enemies.ForEach(
@@ -119,6 +133,9 @@ public class PlayerInput : MonoBehaviour
                 });
 
         _superEffects.gameObject.SetActive(true);
+
+        _acceleration = 80f;
+        _maxVelocity = 5f;
 
         Invoke(nameof(DisableSuperMode), 8.5f);
     }
@@ -141,6 +158,7 @@ public class PlayerInput : MonoBehaviour
     private void FixedUpdate()
     {
         Move();
+        Dash();
     }
 
     private void HandleEnemy()
@@ -178,9 +196,30 @@ public class PlayerInput : MonoBehaviour
         _movement.Normalize();
 
         _rigidBody.AddForce(_movement * _acceleration);
-        _rigidBody.velocity = Vector2.ClampMagnitude(_rigidBody.velocity, MaxVelocity);
+        _rigidBody.velocity = Vector2.ClampMagnitude(_rigidBody.velocity, _maxVelocity);
 
         _walkAnimator.SetFloat("WalkSpeed", _rigidBody.velocity.magnitude);
+    }
+
+    private void Dash()
+    {
+        if (!Input.GetMouseButton(1)) return;
+        if (_movement == Vector2.zero) return;
+
+        if (DashCooldown <= Time.time - _lastDashTime)
+        {
+            _dashAnimate.SetActive(false);
+
+            _lastDashTime = Time.time;
+
+            var dashSmoke = ObjectPools.Instance.GetPooledObject<DashSmoke>();
+            dashSmoke.DoAnimate(_rigidBody.position + _movement * 0.5f);
+            dashSmoke.transform.rotation = Quaternion.LookRotation(Vector3.forward, _movement);
+
+            _rigidBody.position = _rigidBody.position + _movement;
+            _dashAnimate.SetActive(true);
+        }
+
     }
 
     private void OnTriggerEnter2D(Collider2D other)

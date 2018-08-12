@@ -41,7 +41,7 @@ public class Pyre : MonoBehaviour
 
     private readonly Vector3 _lightSourceIncreaseAmount = new Vector3(0.09f, 0.09f, 0.09f);
 
-    public void AddFuel()
+    public void AddFuel(bool addPoints = true)
     {
         _fire.DOShakeScale(0.25f, 2.0f);
 
@@ -69,7 +69,17 @@ public class Pyre : MonoBehaviour
             throwSequence.Append(burnupSprite.transform.DOMove(playerPos, 0.5f).From().SetEase(Ease.OutSine));
             throwSequence.Insert(0f, burnupSprite.transform.DOScale(4.0f, 0.25f).SetEase(Ease.OutSine));
             throwSequence.Insert(0.125f, burnupSprite.transform.DOScale(2.0f, 0.25f).SetEase(Ease.InSine));
-            throwSequence.OnComplete(() => burnupSprite.SetTrigger("Animate"));
+            throwSequence.OnComplete(() =>
+                {
+                    if (addPoints)
+                    {
+                        var popupPos = burnupSprite.targetPosition;
+                        popupPos.y -= 0.25f;
+                        ScoreDisplay.Instance.AddScore(100, 1, "- Light", popupPos);
+                    }
+
+                    burnupSprite.SetTrigger("Animate");
+                });
         }
 
         GameController.Instance.EnemiesBurned++;

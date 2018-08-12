@@ -31,15 +31,15 @@ public class ScoreDisplay : MonoSingleton<ScoreDisplay>
 
     private int _currentScore;
 
-    public void AddScore(int amount, int modifier, string modifierDescription, Vector2 popupPosition)
+    public void AddScore(int amount, float modifier, string modifierDescription, Vector2 popupPosition)
     {
-        _currentScore += amount * modifier;
+        _currentScore += (int)(amount * modifier);
         _valueText.text = _currentScore.ToString();
 
         AnimateAddScore(modifier, modifierDescription, popupPosition);
     }
 
-    private void AnimateAddScore(int modifier, string modifierDescription, Vector2 popupPosition)
+    private void AnimateAddScore(float modifier, string modifierDescription, Vector2 popupPosition)
     {
         var popup = ObjectPools.Instance.GetPooledObject<ModifierPopup>();
         popup.DoAnimate(modifier, modifierDescription, popupPosition);

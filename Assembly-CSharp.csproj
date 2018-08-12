@@ -76,6 +76,7 @@
     <Compile Include="Assets\Scripts\AI\EnemySpawner.cs" />
     <Compile Include="Assets\Scripts\Animation\HeartBeat.cs" />
     <Compile Include="Assets\Scripts\FX\BloodSpray.cs" />
+    <Compile Include="Assets\Scripts\FX\DashSmoke.cs" />
     <Compile Include="Assets\Scripts\GameController.cs" />
     <Compile Include="Assets\Scripts\Generation\GrassGenerator.cs" />
     <Compile Include="Assets\Scripts\Light\Pyre.cs" />

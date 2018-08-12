@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ModifierPopup.cs" author="Lars" company="None">
+// <copyright file="DashSmoke.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -15,54 +15,27 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-using DG.Tweening;
-
-using TMPro;
-
 using UnityEngine;
 
 using Utilities.ObjectPool;
 
-[RequireComponent(typeof(TextMeshPro))]
-public class ModifierPopup : MonoBehaviour, IPoolable
+public class DashSmoke : MonoBehaviour, IPoolable
 {
-    private TextMeshPro _text;
-
     public bool IsEnabled => gameObject.activeInHierarchy;
-
-    private Sequence _popTween;
 
     public void Disable()
     {
-        if (_text == null) _text = GetComponent<TextMeshPro>();
         gameObject.SetActive(false);
     }
 
     public void Enable()
     {
-        if (_text == null) _text = GetComponent<TextMeshPro>();
         gameObject.SetActive(true);
-
-        _text.color = Color.white;
-
     }
 
-    public void DoAnimate(float modifier, string modifierDescription, Vector2 startPosition)
+    public void DoAnimate(Vector2 startPosition)
     {
         transform.position = startPosition;
-        _text.text = $"x{modifier} {modifierDescription}";
-
-        if (_popTween != null)
-        {
-            _popTween.Restart();
-        }
-        else
-        {
-            _popTween = DOTween.Sequence().SetAutoKill(false);
-            _popTween.Append(transform.DOScale(0f, 0.25f).From().SetEase(Ease.OutBack));
-            _popTween.AppendInterval(1f);
-            _popTween.Append(_text.DOColor(Color.clear, 0.5f));
-            _popTween.OnComplete(Disable);
-        }
+        Invoke(nameof(Disable), 1.0f);
     }
 }
