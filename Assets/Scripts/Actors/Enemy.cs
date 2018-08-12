@@ -21,7 +21,7 @@ using Utilities.ObjectPool;
 
 public class Enemy : MonoBehaviour, IPoolable
 {
-    private float _health = 1f;
+    public float Health = 1f;
 
     private Rigidbody2D _rigidBody;
 
@@ -36,15 +36,18 @@ public class Enemy : MonoBehaviour, IPoolable
     private Animator _dieAnimator;
 
     [SerializeField]
+    private Animator _expireAnimator;
+
+    [SerializeField]
     private GameObject _pickupRadius;
 
     public bool IsEnabled => gameObject.activeInHierarchy;
 
     public bool TakeDamage(float damage)
     {
-        _health -= damage;
+        Health -= damage;
 
-        if (_health <= 0)
+        if (Health <= 0)
         {
             Die();
             return true;
@@ -76,6 +79,8 @@ public class Enemy : MonoBehaviour, IPoolable
         ActorChoreographer.Instance.DeregisterEnemy(this);
 
         Debug.Log("I am dead.");
+
+        Invoke(nameof(Expire), 2.0f);
     }
 
     private void Awake()
@@ -93,12 +98,22 @@ public class Enemy : MonoBehaviour, IPoolable
 
     public void Disable()
     {
+        CancelInvoke();
+
         _chasePlayer.enabled = true;
         _faceTarget.enabled = true;
         _walkAnimator.gameObject.SetActive(true);
         _dieAnimator.gameObject.SetActive(false);
         _pickupRadius.gameObject.SetActive(false);
+        _expireAnimator.gameObject.SetActive(false);
 
         gameObject.SetActive(false);
+    }
+
+    private void Expire()
+    {
+        _dieAnimator.gameObject.SetActive(false);
+        _expireAnimator.gameObject.SetActive(true);
+        Invoke(nameof(Disable), 2.2f);
     }
 }

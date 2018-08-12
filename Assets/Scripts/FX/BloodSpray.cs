@@ -1,5 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+
+using DG.Tweening;
+
 using UnityEngine;
 
 using Utilities.ObjectPool;
@@ -12,22 +15,29 @@ public class BloodSpray : MonoBehaviour, IPoolable
 
     private Rigidbody2D _rigidBody;
 
+    private SpriteRenderer _renderer;
+
     public bool IsEnabled => gameObject.activeInHierarchy;
 
     public void Enable()
     {
         if (_bloodAnimator == null) _bloodAnimator = GetComponent<Animator>();
         if (_rigidBody == null) _rigidBody = GetComponent<Rigidbody2D>();
+        if (_renderer == null) _renderer = GetComponent<SpriteRenderer>();
 
-
+        _renderer.color = Color.white;
         gameObject.SetActive(true);
+
+        _renderer.DOColor(Color.clear, 10f).OnComplete(Disable);
     }
 
     public void Disable()
     {
         if (_bloodAnimator == null) _bloodAnimator = GetComponent<Animator>();
         if (_rigidBody == null) _rigidBody = GetComponent<Rigidbody2D>();
+        if (_renderer == null) _renderer = GetComponent<SpriteRenderer>();
 
+        _renderer.color = Color.white;
         gameObject.SetActive(false);
     }
 

@@ -24,6 +24,8 @@ using UnityEngine;
 
 public class Pyre : MonoBehaviour
 {
+    private const float MaxLightSourceScale = 1.2f;
+
     [SerializeField]
     private Transform _fire;
 
@@ -43,9 +45,9 @@ public class Pyre : MonoBehaviour
     {
         _fire.DOShakeScale(0.25f, 2.0f);
 
-        var scale = Vector2.ClampMagnitude(_lightSource.transform.localScale + _lightSourceIncreaseAmount, 1.2f);
+        var lightAreaScale = Vector2.ClampMagnitude(_lightSource.transform.localScale + _lightSourceIncreaseAmount, MaxLightSourceScale);
 
-        _lightSource.DOScale(scale, 0.25f)
+        _lightSource.DOScale(lightAreaScale, 0.25f)
             .SetEase(Ease.OutBack);
 
         if (_enemyBurnupSprites.Count > 0)
@@ -64,10 +66,14 @@ public class Pyre : MonoBehaviour
 
     private void Update()
     {
-        _lightSource.transform.localScale = Vector2.MoveTowards(
-            _lightSource.transform.localScale,
+        _lightSource.localScale = Vector2.MoveTowards(
+            _lightSource.localScale,
             Vector2.zero,
             _decreaseLightStrength * Time.deltaTime);
+
+        var fireScale = 5f * (_lightSource.localScale.magnitude / MaxLightSourceScale);
+        _fire.localScale = Vector2.MoveTowards(_fire.localScale, new Vector2(fireScale, fireScale), 5f * Time.deltaTime);
+
     }
 
     private IEnumerator ReturnBurnupSpriteToPool(Transform burnupSprite)

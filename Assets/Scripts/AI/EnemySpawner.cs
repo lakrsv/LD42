@@ -48,7 +48,9 @@ public class EnemySpawner : MonoBehaviour
                 // Spawn enemies.
                 var enemy = pool.GetPooledObject<Enemy>();
                 var enemyPos = GetPositionOnCircle(random.Next(0, 360), SpawnDistance);
+                var enemyHealth = RandomProvider.Instance.Random.Next(1, 1 + GameController.Instance.EnemiesBurned / 20);
 
+                enemy.Health = enemyHealth;
                 enemy.transform.position = enemyPos;
             }
 
