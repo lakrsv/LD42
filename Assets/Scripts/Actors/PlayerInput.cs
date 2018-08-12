@@ -15,7 +15,14 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Collections;
+
+using DG.Tweening;
+
+using TMPro;
+
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 using Utilities.ObjectPool;
 
@@ -34,6 +41,9 @@ public class PlayerInput : MonoBehaviour
 
     [SerializeField]
     private Animator _dieAnimator;
+
+    [SerializeField]
+    private TextMeshProUGUI _gameOverText;
 
     private bool _disableInput;
 
@@ -77,6 +87,7 @@ public class PlayerInput : MonoBehaviour
     [SerializeField]
     private GameObject _dashAnimate;
 
+
     public void TakeDamage(float amount)
     {
         _healthDisplay.RemoveHealth();
@@ -84,6 +95,8 @@ public class PlayerInput : MonoBehaviour
 
     private void Die()
     {
+        if (_disableInput) return;
+
         _disableInput = true;
         _dieAnimator.gameObject.SetActive(true);
         _walkAnimator.gameObject.SetActive(false);
@@ -91,6 +104,18 @@ public class PlayerInput : MonoBehaviour
         _faceCursor.enabled = false;
         _equippedWeapons.ForEach(x => x.gameObject.SetActive(false));
         _rigidBody.constraints = RigidbodyConstraints2D.FreezeAll;
+
+        StartCoroutine(GameOverRoutine());
+    }
+
+    private IEnumerator GameOverRoutine()
+    {
+        yield return new WaitForSeconds(0.5f);
+        _pyre.Extinquish();
+        yield return new WaitForSeconds(0.25f);
+        _gameOverText.DOColor(Color.clear, 0.25f).From().OnStart(() => _gameOverText.gameObject.SetActive(true));
+        yield return new WaitForSeconds(1.25f);
+        SceneManager.LoadScene("SplashScreen");
     }
 
     private void DisableSuperMode()

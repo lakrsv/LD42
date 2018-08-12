@@ -806,6 +806,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _dieAnimator: {fileID: 95289578598812258}
+  _gameOverText: {fileID: 0}
   _enemyEquipPosition: {fileID: 4716923612392610}
   _equippedWeapons:
   - {fileID: 114709124498090630}

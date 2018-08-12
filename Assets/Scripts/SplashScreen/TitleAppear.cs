@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ScoreDisplay.cs" author="Lars" company="None">
+// <copyright file="TitleAppear.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -17,37 +17,17 @@
 
 using DG.Tweening;
 
-using TMPro;
-
 using UnityEngine;
+using UnityEngine.UI;
 
-using Utilities;
-using Utilities.ObjectPool;
-
-public class ScoreDisplay : MonoSingleton<ScoreDisplay>
+public class TitleAppear : MonoBehaviour
 {
-    [SerializeField]
-    private TextMeshProUGUI _valueText;
-
-    private int _currentScore;
-
-    public void AddScore(int amount, float modifier, string modifierDescription, Vector2 popupPosition)
+    // Use this for initialization
+    private void Start()
     {
-        _currentScore += (int)(amount * modifier);
-        _valueText.text = _currentScore.ToString();
+        var img = GetComponent<Image>();
 
-        AnimateAddScore(modifier, modifierDescription, popupPosition);
-
-        if (_currentScore > PlayerPrefs.GetInt("Highscore"))
-        {
-            PlayerPrefs.SetInt("Highscore", _currentScore);
-            PlayerPrefs.Save();
-        }
-    }
-
-    private void AnimateAddScore(float modifier, string modifierDescription, Vector2 popupPosition)
-    {
-        var popup = ObjectPools.Instance.GetPooledObject<ModifierPopup>();
-        popup.DoAnimate(modifier, modifierDescription, popupPosition);
+        var appearSequence = DOTween.Sequence();
+        appearSequence.Append(img.DOColor(Color.clear, 1.0f).From());
     }
 }

@@ -28,7 +28,7 @@ public class Pyre : MonoBehaviour
 
     private readonly List<Animator> _activeBurnupSprites = new List<Animator>();
 
-    private readonly float _decreaseLightStrength = 0.05f;
+    private float _decreaseLightStrength = 0.05f;
 
     [SerializeField]
     private List<Animator> _enemyBurnupSprites;
@@ -107,5 +107,10 @@ public class Pyre : MonoBehaviour
             _fire.localScale,
             new Vector2(fireScale, fireScale),
             5f * Time.deltaTime);
+    }
+
+    public void Extinquish()
+    {
+        _decreaseLightStrength = 0.6f;
     }
 }

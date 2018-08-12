@@ -80,6 +80,10 @@
     <Compile Include="Assets\Scripts\GameController.cs" />
     <Compile Include="Assets\Scripts\Generation\GrassGenerator.cs" />
     <Compile Include="Assets\Scripts\Light\Pyre.cs" />
+    <Compile Include="Assets\Scripts\SplashScreen\AnyKeyToContinueAnimate.cs" />
+    <Compile Include="Assets\Scripts\SplashScreen\ExitEsc.cs" />
+    <Compile Include="Assets\Scripts\SplashScreen\Highscore.cs" />
+    <Compile Include="Assets\Scripts\SplashScreen\TitleAppear.cs" />
     <Compile Include="Assets\Scripts\Transform\FaceCursor.cs" />
     <Compile Include="Assets\Scripts\Transform\FaceTarget.cs" />
     <Compile Include="Assets\Scripts\Transform\LightFlicker.cs" />

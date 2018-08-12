@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ScoreDisplay.cs" author="Lars" company="None">
+// <copyright file="Highscore.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -21,33 +21,18 @@ using TMPro;
 
 using UnityEngine;
 
-using Utilities;
-using Utilities.ObjectPool;
-
-public class ScoreDisplay : MonoSingleton<ScoreDisplay>
+public class Highscore : MonoBehaviour
 {
-    [SerializeField]
-    private TextMeshProUGUI _valueText;
-
-    private int _currentScore;
-
-    public void AddScore(int amount, float modifier, string modifierDescription, Vector2 popupPosition)
+    // Use this for initialization
+    private void Start()
     {
-        _currentScore += (int)(amount * modifier);
-        _valueText.text = _currentScore.ToString();
+        var txt = GetComponent<TextMeshProUGUI>();
+        var highScore = PlayerPrefs.GetInt("Highscore", 0);
+        txt.text = $"Highscore: {highScore}";
+        
 
-        AnimateAddScore(modifier, modifierDescription, popupPosition);
-
-        if (_currentScore > PlayerPrefs.GetInt("Highscore"))
-        {
-            PlayerPrefs.SetInt("Highscore", _currentScore);
-            PlayerPrefs.Save();
-        }
-    }
-
-    private void AnimateAddScore(float modifier, string modifierDescription, Vector2 popupPosition)
-    {
-        var popup = ObjectPools.Instance.GetPooledObject<ModifierPopup>();
-        popup.DoAnimate(modifier, modifierDescription, popupPosition);
+        var appearSequence = DOTween.Sequence();
+        appearSequence.AppendInterval(0.25f);
+        appearSequence.Append(txt.DOColor(Color.clear, 1.0f).From());
     }
 }
