@@ -22,7 +22,14 @@ public class PlayerInput : MonoBehaviour
 {
     private const float MaxVelocity = 3f;
 
+    private const float NoLightDieTimer = 3.0f;
+
     private readonly float _acceleration = 50f;
+
+    [SerializeField]
+    private Animator _dieAnimator;
+
+    private bool _disableInput;
 
     [SerializeField]
     private Transform _enemyEquipPosition;
@@ -39,7 +46,14 @@ public class PlayerInput : MonoBehaviour
     [SerializeField]
     private HealthDisplay _healthDisplay;
 
+    private bool _inLight = true;
+
+    private float _lightExitTime;
+
     private Vector2 _movement = new Vector2();
+
+    [SerializeField]
+    private GameObject _playerHat;
 
     [SerializeField]
     private Pyre _pyre;
@@ -49,28 +63,78 @@ public class PlayerInput : MonoBehaviour
     private Rigidbody2D _rigidBody;
 
     [SerializeField]
-    private Animator _walkAnimator;
-
-    [SerializeField]
     private GameObject _superEffects;
 
-    private bool _disableInput;
+    [SerializeField]
+    private Animator _walkAnimator;
 
     public void TakeDamage(float amount)
     {
         _healthDisplay.RemoveHealth();
     }
 
+    private void Die()
+    {
+        _disableInput = true;
+        _dieAnimator.gameObject.SetActive(true);
+        _walkAnimator.gameObject.SetActive(false);
+        _playerHat.gameObject.SetActive(false);
+        _faceCursor.enabled = false;
+        _equippedWeapons.ForEach(x => x.gameObject.SetActive(false));
+        _rigidBody.constraints = RigidbodyConstraints2D.FreezeAll;
+    }
+
+    private void DisableSuperMode()
+    {
+        _superEffects.gameObject.SetActive(false);
+
+        GameController.Instance.SuperCounter = 10;
+        _equippedWeapons[0].FireCooldown = 1.0f;
+        _equippedWeapons[1].FireCooldown = 1.0f;
+
+        _equippedWeapons[1].gameObject.SetActive(false);
+    }
+
+    private void EnableSuperMode()
+    {
+        Debug.Log("SUPER SAYAN");
+
+        _equippedWeapons[0].FireCooldown = 0.5f;
+        _equippedWeapons[1].FireCooldown = 0.75f;
+        _equippedWeapons[1].gameObject.SetActive(true);
+
+        _healthDisplay.AddHealth();
+        _healthDisplay.AddHealth();
+
+        _pyre.AddFuel();
+
+        var enemies = ActorChoreographer.Instance.Enemies.ToArray();
+        enemies.ForEach(
+            x =>
+                {
+                    if (!x.enabled) return;
+                    var impactDir = transform.position - x.transform.position;
+                    x.DoImpact(impactDir.normalized * 10f);
+                    x.TakeDamage(RandomProvider.Instance.Random.Next(0, 2));
+                });
+
+        _superEffects.gameObject.SetActive(true);
+
+        Invoke(nameof(DisableSuperMode), 8.5f);
+    }
+
     private void FireWeapon()
     {
         // TODO - Make accessible for controller
-        if (Input.GetMouseButton(0)) _equippedWeapons.ForEach(x =>
-            {
-                if (x.gameObject.activeInHierarchy)
-                {
-                    x.Fire(_faceCursor.GetLastCursorPosition());
-                }
-            });
+        if (Input.GetMouseButton(0))
+            _equippedWeapons.ForEach(
+                x =>
+                    {
+                        if (x.gameObject.activeInHierarchy)
+                        {
+                            x.Fire(_faceCursor.GetLastCursorPosition());
+                        }
+                    });
     }
 
     // Update is called once per frame
@@ -119,6 +183,25 @@ public class PlayerInput : MonoBehaviour
         _walkAnimator.SetFloat("WalkSpeed", _rigidBody.velocity.magnitude);
     }
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Light"))
+        {
+            Debug.Log("Entered light");
+            _inLight = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Light"))
+        {
+            Debug.Log("Left light");
+            _inLight = false;
+            _lightExitTime = Time.time;
+        }
+    }
+
     private void OnTriggerStay2D(Collider2D other)
     {
         if (_equippedEnemy)
@@ -162,43 +245,23 @@ public class PlayerInput : MonoBehaviour
             GameController.Instance.SuperCounter = 100000000;
             EnableSuperMode();
         }
-    }
 
-    private void EnableSuperMode()
-    {
-        Debug.Log("SUPER SAYAN");
+        if (_healthDisplay.CurrentHealth <= 0)
+        {
+            Die();
+        }
 
-        _equippedWeapons[0].FireCooldown = 0.5f;
-        _equippedWeapons[1].FireCooldown = 0.75f;
-        _equippedWeapons[1].gameObject.SetActive(true);
-
-        _healthDisplay.AddHealth();
-        _healthDisplay.AddHealth();
-
-        _pyre.AddFuel();
-
-        var enemies = ActorChoreographer.Instance.Enemies.ToArray();
-        enemies.ForEach(x =>
+        if (!_inLight)
+        {
+            if (NoLightDieTimer >= Time.time - _lightExitTime)
             {
-                if (!x.enabled) return;
-                var impactDir = transform.position - x.transform.position;
-                x.DoImpact(impactDir.normalized * 10f);
-                x.TakeDamage(RandomProvider.Instance.Random.Next(0, 2));
-            });
+                for (var i = 0; i < 8; ++i)
+                {
+                    _healthDisplay.RemoveHealth();
+                }
 
-        _superEffects.gameObject.SetActive(true);
-
-        Invoke(nameof(DisableSuperMode), 8.5f);
-    }
-
-    private void DisableSuperMode()
-    {
-        _superEffects.gameObject.SetActive(false);
-
-        GameController.Instance.SuperCounter = 10;
-        _equippedWeapons[0].FireCooldown = 1.0f;
-        _equippedWeapons[1].FireCooldown = 1.0f;
-
-        _equippedWeapons[1].gameObject.SetActive(false);
+                Die();
+            }
+        }
     }
 }

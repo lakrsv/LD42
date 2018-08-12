@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Enemy
   - Pyre
+  - Light
   layers:
   - Default
   - TransparentFX
