@@ -40,8 +40,8 @@ public class EnemySpawner : MonoBehaviour
 
         while (GameController.Instance.IsPlaying)
         {
-            var minEnemies = 1 + GameController.Instance.EnemiesKilled / 20;
-            var maxEnemies = 1 + GameController.Instance.EnemiesKilled / 10;
+            var minEnemies = 1 + GameController.Instance.EnemiesKilled / 10;
+            var maxEnemies = 1 + GameController.Instance.EnemiesKilled / 5;
 
             var enemyAmount = RandomProvider.Instance.Random.Next(minEnemies, maxEnemies + 1);
 
